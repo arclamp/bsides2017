@@ -23,6 +23,7 @@
   },
   "scripts": {
     "build": "webpack",
+    "watch": "webpack --watch",
     "serve": "http-server build"
   },
   "repository": {
