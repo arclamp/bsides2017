@@ -1,0 +1,37 @@
+{
+  "name": "bsides2017",
+  "version": "0.1.0",
+  "description": "Experimental visualization for BSides 2017",
+  "main": "index.js",
+  "dependencies": {
+    "reduxstrap": "^0.2.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.1.1",
+    "babel-preset-es2015": "^6.24.1",
+    "html-webpack-plugin": "^2.29.0",
+    "http-server": "^0.10.0",
+    "immutable": "^3.8.1",
+    "redux": "^3.7.1",
+    "redux-logger": "^3.0.6",
+    "redux-promise": "^0.5.3",
+    "redux-thunk": "^2.2.0",
+    "webpack": "^3.0.0",
+    "yaml-loader": "^0.5.0"
+  },
+  "scripts": {
+    "build": "webpack",
+    "serve": "http-server build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ronichoudhury-work/bsides2017.git"
+  },
+  "author": "Roni Choudhury",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/ronichoudhury-work/bsides2017/issues"
+  },
+  "homepage": "https://github.com/ronichoudhury-work/bsides2017#readme"
+}
