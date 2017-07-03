@@ -2,15 +2,10 @@ import { action,
          store,
          observeStore } from './redux';
 
-console.log('reduxstrap!');
+import dataRaw from '../data/streaming_output.json';
 
-observeStore(next => {
-  const mode = next.get('mode');
-  console.log(`mode changed to ${mode}`);
-}, s => s.get('mode'));
+const data = dataRaw.split("\n")
+  .filter(x => x.length > 0)
+  .map(x => JSON.parse(x));
 
-store.dispatch(action.initial('reduxstrap'));
-
-window.setTimeout(() => {
-  store.dispatch(action.secondary());
-}, 2000);
+console.log(data);

@@ -31,6 +31,10 @@ module.exports = {
           'json-loader',
           'yaml-loader'
         ]
+      },
+      {
+        test: /data\/streaming_output.json$/,
+        use: 'raw-loader'
       }
     ]
   },
