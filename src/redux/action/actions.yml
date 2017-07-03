@@ -1,4 +1,2 @@
-initial:
-  - label
-
-secondary: []
+setDataStream:
+  - data

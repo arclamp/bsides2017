@@ -3,7 +3,10 @@ import Immutable from 'immutable';
 import { actionType } from '../action';
 
 const initial = Immutable.fromJS({
-  mode: 0
+  datastream: {
+    data: null,
+    index: 0
+  }
 });
 
 const reducer = (state = initial, action = {}) => {
@@ -14,12 +17,8 @@ const reducer = (state = initial, action = {}) => {
   }
 
   switch (action.type) {
-    case actionType.initial:
-      newState = state.set('mode', 1);
-      break;
-
-    case actionType.secondary:
-      newState = state.set('mode', 2);
+    case actionType.setDataStream:
+      newState = state.setIn(['datastream', 'data'], Immutable.fromJS(action.data));
       break;
   }
 

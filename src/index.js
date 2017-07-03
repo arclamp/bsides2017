@@ -8,4 +8,4 @@ const data = dataRaw.split("\n")
   .filter(x => x.length > 0)
   .map(x => JSON.parse(x));
 
-console.log(data);
+store.dispatch(action.setDataStream(data));
