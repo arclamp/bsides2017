@@ -18,7 +18,11 @@ const reducer = (state = initial, action = {}) => {
 
   switch (action.type) {
     case actionType.setDataStream:
-      newState = state.setIn(['datastream', 'data'], Immutable.fromJS(action.data));
+      newState = state.setIn(['datastream', 'data'], action.data);
+      break;
+
+    case actionType.advanceDataPointer:
+      newState = state.updateIn(['datastream', 'index'], x => (x + 1) % state.getIn(['datastream', 'data']).length);
       break;
   }
 

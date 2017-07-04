@@ -3,6 +3,7 @@ var path = require('path');
 var HtmlPlugin = require('html-webpack-plugin');
 
 module.exports = {
+  devtool: 'cheap-module-source-map',
   entry: {
     index: './src/index.js'
   },
