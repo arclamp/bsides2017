@@ -11,6 +11,11 @@ module.exports = {
     path: path.resolve('build'),
     filename: 'index.js'
   },
+  resolve: {
+    alias: {
+      '~': path.resolve('src')
+    }
+  },
   module: {
     rules: [
       {

@@ -1,10 +1,11 @@
 import { action,
          store,
-         observeStore } from './redux';
+         observeStore } from '~/redux';
+import { start } from '~/dataControl';
 
 import dataRaw from '../data/streaming_output.json';
 
-const data = dataRaw.split("\n")
+const data = dataRaw.split('\n')
   .filter(x => x.length > 0)
   .map(x => JSON.parse(x));
 
@@ -14,7 +15,4 @@ observeStore(next => {
 
 store.dispatch(action.setDataStream(data));
 
-const delay = 1000;
-window.setInterval(() => {
-  store.dispatch(action.advanceDataPointer());
-}, delay);
+start();
