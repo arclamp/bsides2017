@@ -18,13 +18,16 @@
     "redux-logger": "^3.0.6",
     "redux-promise": "^0.5.3",
     "redux-thunk": "^2.2.0",
+    "semistandard": "^11.0.0",
+    "snazzy": "^7.0.0",
     "webpack": "^3.0.0",
     "yaml-loader": "^0.5.0"
   },
   "scripts": {
     "build": "webpack",
     "watch": "webpack --watch",
-    "serve": "http-server build"
+    "serve": "http-server build",
+    "lint": "semistandard | snazzy"
   },
   "repository": {
     "type": "git",
