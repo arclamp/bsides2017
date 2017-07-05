@@ -1,14 +1,21 @@
 var path = require('path');
 
+var webpack = require('webpack');
 var HtmlPlugin = require('html-webpack-plugin');
 
 module.exports = {
+  devtool: 'cheap-module-source-map',
   entry: {
     index: './src/index.js'
   },
   output: {
     path: path.resolve('build'),
     filename: 'index.js'
+  },
+  resolve: {
+    alias: {
+      '~': path.resolve('src')
+    }
   },
   module: {
     rules: [
@@ -25,12 +32,42 @@ module.exports = {
         ]
       },
       {
+        test: /\.jade$/,
+        use: 'jade-loader'
+      },
+      {
+        test: /\.less$/,
+        use: [
+          'style-loader',
+          'css-loader',
+          'less-loader'
+        ]
+      },
+      {
+        test: /\.styl$/,
+        use: [
+          'style-loader',
+          'css-loader',
+          'stylus-loader'
+        ]
+      },
+      {
+        test: /\.(eot|woff2|woff|ttf|svg)$/,
+        use: 'url-loader',
+        include: /node_modules\/bootstrap/
+      },
+
+      {
         test: /\.yml$/,
         exclude: /node_modules/,
         use: [
           'json-loader',
           'yaml-loader'
         ]
+      },
+      {
+        test: /data\/streaming_output.json$/,
+        use: 'raw-loader'
       }
     ]
   },
@@ -41,6 +78,10 @@ module.exports = {
       chunks: [
         'index'
       ]
+    }),
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery'
     })
   ]
 };

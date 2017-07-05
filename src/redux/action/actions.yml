@@ -1,4 +1,15 @@
-initial:
-  - label
+setDataStream:
+  - data
 
-secondary: []
+advanceDataPointer: []
+
+setDataPointer:
+  - index
+
+start: []
+
+stop: []
+
+increaseSpeed: []
+
+decreaseSpeed: []
