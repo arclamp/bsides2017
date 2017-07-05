@@ -56,7 +56,9 @@ select('#faster').on('click', () => {
 // When the data pointer changes.
 observeStore(next => {
   const index = next.getIn(['datastream', 'index']);
-  console.log(index);
+  const data = next.getIn(['datastream', 'data'])[index];
+
+  console.log(index, data);
 
   // Disable the rewind button whenever playback is at the very start of the
   // data.
