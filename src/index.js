@@ -5,6 +5,7 @@ import { action,
          observeStore } from '~/redux';
 import { start,
          stop } from '~/dataControl';
+import Table from '~/vis/Table';
 
 import dataRaw from '../data/streaming_output.json';
 
@@ -50,6 +51,10 @@ select('#slower').on('click', () => {
 select('#faster').on('click', () => {
   store.dispatch(action.increaseSpeed());
 });
+
+// Instantiate table view.
+let table = new Table(select('#table').node(), {});
+table.render();
 
 // Install reactive actions to changes in the store.
 //

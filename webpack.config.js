@@ -3,7 +3,9 @@ var path = require('path');
 var webpack = require('webpack');
 var HtmlPlugin = require('html-webpack-plugin');
 
-module.exports = {
+var candela = require('candela/webpack');
+
+module.exports = candela({
   devtool: 'cheap-module-source-map',
   entry: {
     index: './src/index.js'
@@ -52,12 +54,6 @@ module.exports = {
         ]
       },
       {
-        test: /\.(eot|woff2|woff|ttf|svg)$/,
-        use: 'url-loader',
-        include: /node_modules\/bootstrap/
-      },
-
-      {
         test: /\.yml$/,
         exclude: /node_modules/,
         use: [
@@ -84,4 +80,4 @@ module.exports = {
       jQuery: 'jquery'
     })
   ]
-};
+});
