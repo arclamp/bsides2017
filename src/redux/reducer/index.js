@@ -6,6 +6,12 @@ const initial = Immutable.fromJS({
   datastream: {
     data: null,
     index: 0
+  },
+  playback: {
+    interval: 1000,
+    intervalHigh: 1000,
+    intervalLow: 0,
+    running: false
   }
 });
 
@@ -23,6 +29,38 @@ const reducer = (state = initial, action = {}) => {
 
     case actionType.advanceDataPointer:
       newState = state.updateIn(['datastream', 'index'], x => (x + 1) % state.getIn(['datastream', 'data']).length);
+      break;
+
+    case actionType.setDataPointer:
+      newState = state.setIn(['datastream', 'index'], action.index);
+      break;
+
+    case actionType.start:
+      newState = state.setIn(['playback', 'running'], true);
+      break;
+
+    case actionType.stop:
+      newState = state.setIn(['playback', 'running'], false);
+      break;
+
+    case actionType.decreaseSpeed:
+      newState = state.updateIn(['playback', 'interval'], x => {
+        x += 200;
+        if (x > 1000) {
+          x = 1000;
+        }
+        return x;
+      });
+      break;
+
+    case actionType.increaseSpeed:
+      newState = state.updateIn(['playback', 'interval'], x => {
+        x -= 200;
+        if (x < 0) {
+          x = 0;
+        }
+        return x;
+      });
       break;
   }
 

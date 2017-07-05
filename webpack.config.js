@@ -44,6 +44,14 @@ module.exports = {
         ]
       },
       {
+        test: /\.styl$/,
+        use: [
+          'style-loader',
+          'css-loader',
+          'stylus-loader'
+        ]
+      },
+      {
         test: /\.(eot|woff2|woff|ttf|svg)$/,
         use: 'url-loader',
         include: /node_modules\/bootstrap/
