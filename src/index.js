@@ -6,6 +6,7 @@ import { action,
 import { start,
          stop } from '~/dataControl';
 import Table from '~/vis/Table';
+import DataWindow from '~/util/DataWindow';
 
 import dataRaw from '../data/streaming_output.json';
 
@@ -52,8 +53,13 @@ select('#faster').on('click', () => {
   store.dispatch(action.increaseSpeed());
 });
 
+// Create a data window object.
+let dataWindow = new DataWindow();
+
 // Instantiate table view.
-let table = new Table(select('#table').node(), {});
+let table = new Table(select('#table').node(), {
+  dataWindow
+});
 table.render();
 
 // Install reactive actions to changes in the store.
@@ -64,6 +70,14 @@ observeStore(next => {
   const data = next.getIn(['datastream', 'data'])[index];
 
   console.log(index, data);
+
+  // Add the new data item to the data window.
+  dataWindow.add(Object.assign({
+    index
+  }, data));
+
+  // Re-render the table view.
+  table.render();
 
   // Disable the rewind button whenever playback is at the very start of the
   // data.
