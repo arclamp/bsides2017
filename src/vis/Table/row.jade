@@ -1,6 +1,4 @@
 tr
-  td= index
-  td= TTLs
-  td= proto
-  td= anomalous
-  td= cluster
+  td= data.index
+  each header in headers
+    td= `${data[header]}`

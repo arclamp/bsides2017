@@ -58,7 +58,13 @@ let dataWindow = new DataWindow();
 
 // Instantiate table view.
 let table = new Table(select('#table').node(), {
-  dataWindow
+  dataWindow,
+  headers: [
+    'TTLs',
+    'proto',
+    'anomalous',
+    'cluster'
+  ]
 });
 table.render();
 

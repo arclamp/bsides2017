@@ -10,8 +10,11 @@ export default class Table extends VisComponent {
     super(el, options);
 
     this.dataWindow = options.dataWindow;
+    this.headers = options.headers;
 
-    select(this.el).html(content());
+    select(this.el).html(content({
+      headers: this.headers
+    }));
   }
 
   render () {
@@ -21,7 +24,10 @@ export default class Table extends VisComponent {
       .data(this.dataWindow.data, d => d.index);
 
     sel.enter()
-      .append(d => stringToElement(row(d)));
+      .append(d => stringToElement(row({
+        data: d,
+        headers: this.headers
+      })));
 
     sel.exit()
       .remove();
