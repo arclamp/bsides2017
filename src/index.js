@@ -99,6 +99,9 @@ observeStore(next => {
   // Re-render the table view.
   table.render();
 
+  // Re-render the bubble view.
+  bubble.render();
+
   // Disable the rewind button whenever playback is at the very start of the
   // data.
   select('#rewind').attr('disabled', index === 0 ? true : null);
