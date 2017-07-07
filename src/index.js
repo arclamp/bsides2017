@@ -6,6 +6,8 @@ import { action,
 import { start,
          stop } from '~/dataControl';
 import Table from '~/vis/Table';
+import Chart from '~/vis/Chart';
+import Bubble from '~/vis/Bubble';
 import DataWindow from '~/util/DataWindow';
 
 import dataRaw from '../data/streaming_output.json';
@@ -67,6 +69,18 @@ let table = new Table(select('#table').node(), {
   ]
 });
 table.render();
+
+// Instantiate chart view.
+let chart = new Chart(select('#chart').node(), {
+  dataWindow
+});
+chart.render();
+
+// Instantiate bubble view.
+let bubble = new Bubble(select('#bubble').node(), {
+  dataWindow
+});
+bubble.render();
 
 // Install reactive actions to changes in the store.
 //
