@@ -1,3 +1,4 @@
+import { easeLinear } from 'd3-ease';
 import { hierarchy,
          pack } from 'd3-hierarchy';
 import { scaleOrdinal,
@@ -67,7 +68,8 @@ export default class Bubble extends VisComponent {
       .style('stroke', 'black');
 
     const t = transition()
-      .duration(this.interval());
+      .duration(this.interval())
+      .ease(easeLinear);
 
     select(this.el)
       .select('svg')
