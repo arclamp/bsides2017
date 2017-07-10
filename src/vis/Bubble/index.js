@@ -21,9 +21,11 @@ export default class Bubble extends VisComponent {
     this.data = {
       children: [
         {
+          cluster: 'non-anomalous',
           value: 0
         },
         {
+          cluster: 'anomalous',
           value: 0,
           children: []
         }
@@ -38,41 +40,44 @@ export default class Bubble extends VisComponent {
   }
 
   render () {
-    select(this.el)
-      .select('svg')
-      .selectAll('*')
-      .remove();
-
     let bubbles = pack()
       .size([620.5, 400])
       .padding(3);
 
     let root = hierarchy(this.data)
-      .sum(d => d.value);
+      .sum(d => d.value || 0.1);
 
     bubbles(root);
 
     const color = scaleOrdinal(schemeCategory20);
 
-    const node = select(this.el)
+    select(this.el)
       .select('svg')
       .selectAll('g')
       .data(root.descendants())
       .enter()
       .append('g')
+      .append('circle')
+      .style('stroke-width', '1px')
+      .style('stroke', 'black');
+
+    select(this.el)
+      .select('svg')
+      .selectAll('g')
       .attr('transform', d => `translate(${d.x}, ${d.y})`);
 
-    node.append('circle')
+    select(this.el)
+      .select('svg')
+      .selectAll('g')
+      .select('circle')
       .attr('r', d => d.r)
-      .style('stroke', 'black')
-      .style('stroke-width', '1px')
       .style('fill', (d, i) => {
         if (d.depth === 0) {
           return 'lightgray';
         } else if (d.depth === 1) {
           return 'gray';
         } else {
-          return color(i);
+          return color(d.data.cluster);
         }
       });
   }
@@ -111,6 +116,7 @@ export default class Bubble extends VisComponent {
 
   makeCluster (which) {
     this.data.children[1].children[which] = {
+      cluster: which,
       value: 0
     };
   }
