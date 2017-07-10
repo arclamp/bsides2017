@@ -3,6 +3,7 @@ import { hierarchy,
 import { scaleOrdinal,
          schemeCategory20 } from 'd3-scale';
 import { select } from 'd3-selection';
+import { transition } from 'd3-transition';
 
 import VisComponent from 'candela/VisComponent';
 
@@ -16,6 +17,10 @@ export default class Bubble extends VisComponent {
     // that will be needed to update the hierarchy data.
     options.dataWindow.on('added', d => this.add(d));
     options.dataWindow.on('deleted', d => this.remove(d));
+
+    // Retain a function that specifies what the interval is between data
+    // updates.
+    this.interval = options.interval || (() => 0);
 
     // Construct an initial hierarchy.
     this.data = {
@@ -61,15 +66,20 @@ export default class Bubble extends VisComponent {
       .style('stroke-width', '1px')
       .style('stroke', 'black');
 
+    const t = transition()
+      .duration(this.interval());
+
     select(this.el)
       .select('svg')
       .selectAll('g')
+      .transition(t)
       .attr('transform', d => `translate(${d.x}, ${d.y})`);
 
     select(this.el)
       .select('svg')
       .selectAll('g')
       .select('circle')
+      .transition(t)
       .attr('r', d => d.r)
       .style('fill', (d, i) => {
         if (d.depth === 0) {

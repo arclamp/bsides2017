@@ -78,7 +78,8 @@ chart.render();
 
 // Instantiate bubble view.
 let bubble = new Bubble(select('#bubble').node(), {
-  dataWindow
+  dataWindow,
+  interval: () => store.getState().getIn(['playback', 'interval'])
 });
 bubble.render();
 
