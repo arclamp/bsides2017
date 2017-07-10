@@ -1,7 +1,7 @@
 import { hierarchy,
          pack } from 'd3-hierarchy';
-import { scaleSequential,
-         interpolateMagma } from 'd3-scale';
+import { scaleOrdinal,
+         schemeCategory20 } from 'd3-scale';
 import { select } from 'd3-selection';
 
 import VisComponent from 'candela/VisComponent';
@@ -19,8 +19,10 @@ export default class Bubble extends VisComponent {
 
     // Construct an initial hierarchy.
     this.data = {
-      value: 0,
       children: [
+        {
+          value: 0
+        },
         {
           value: 0,
           children: []
@@ -50,10 +52,7 @@ export default class Bubble extends VisComponent {
 
     bubbles(root);
 
-    console.log(root.descendants());
-
-    const color = scaleSequential(interpolateMagma)
-      .domain([-4, 4]);
+    const color = scaleOrdinal(schemeCategory20);
 
     const node = select(this.el)
       .select('svg')
@@ -65,44 +64,62 @@ export default class Bubble extends VisComponent {
 
     node.append('circle')
       .attr('r', d => d.r)
-      .attr('fill', d => color(d.depth));
+      .style('stroke', 'black')
+      .style('stroke-width', '1px')
+      .style('fill', (d, i) => {
+        if (d.depth === 0) {
+          return 'lightgray';
+        } else if (d.depth === 1) {
+          return 'gray';
+        } else {
+          return color(i);
+        }
+      });
   }
 
   add (d) {
-    console.log('add', d);
-    this.data.value++;
     if (d.anomalous) {
       if (this.getCluster(d.cluster) === undefined) {
         this.makeCluster(d.cluster);
       }
 
       this.incrementCluster(d.cluster);
+    } else {
+      this.incrementNormal();
     }
   }
 
   remove (d) {
-    console.log('remove', d);
-    this.data.value--;
     if (d.anomalous) {
       this.decrementCluster(d.cluster);
+    } else {
+      this.decrementNormal();
     }
   }
 
+  incrementNormal () {
+    this.data.children[0].value++;
+  }
+
+  decrementNormal () {
+    this.data.children[0].value--;
+  }
+
   getCluster (which) {
-    return this.data.children[0].children[which];
+    return this.data.children[1].children[which];
   }
 
   makeCluster (which) {
-    this.data.children[0].children[which] = {
+    this.data.children[1].children[which] = {
       value: 0
     };
   }
 
   incrementCluster (which) {
-    this.data.children[0].children[which].value++;
+    this.data.children[1].children[which].value++;
   }
 
   decrementCluster (which) {
-    this.data.children[0].children[which].value--;
+    this.data.children[1].children[which].value--;
   }
 }
