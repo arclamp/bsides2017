@@ -48,7 +48,7 @@ export default class Bubble extends VisComponent {
       .padding(3);
 
     let root = hierarchy(this.data)
-      .sum(d => d.value || 1);
+      .sum(d => d.value);
 
     bubbles(root);
 
