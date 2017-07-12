@@ -1,7 +1,5 @@
 import { easeLinear } from 'd3-ease';
 import { pack } from 'd3-hierarchy';
-import { scaleOrdinal,
-         schemeCategory20 } from 'd3-scale';
 import { select } from 'd3-selection';
 import { transition } from 'd3-transition';
 
@@ -23,6 +21,9 @@ export default class Bubble extends VisComponent {
     // updates.
     this.interval = options.interval || (() => 0);
 
+    // Grab a colormap object from the options.
+    this.color = options.color;
+
     // Construct an initial hierarchy.
     this.data = new Clusters();
 
@@ -41,7 +42,6 @@ export default class Bubble extends VisComponent {
 
   render () {
     const root = this.bubbles(this.data.hierarchy());
-    const color = scaleOrdinal(schemeCategory20);
 
     select(this.el)
       .select('svg')
@@ -75,7 +75,7 @@ export default class Bubble extends VisComponent {
         } else if (d.depth === 1) {
           return 'gray';
         } else {
-          return color(d.data.cluster);
+          return this.color(d.data.cluster);
         }
       });
   }

@@ -1,7 +1,5 @@
 import { select } from 'd3-selection';
-import { scaleLinear,
-         scaleOrdinal,
-         schemeCategory20 } from 'd3-scale';
+import { scaleLinear } from 'd3-scale';
 import { area,
          stack } from 'd3-shape';
 
@@ -16,6 +14,7 @@ export default class Chart extends VisComponent {
     super(el, options);
 
     this.interval = options.interval;
+    this.color = options.color;
 
     const size = 100;
 
@@ -56,8 +55,6 @@ export default class Chart extends VisComponent {
       .x((d, i) => x(i))
       .y0(d => y(d[0]))
       .y1(d => y(d[1]));
-
-    this.color = scaleOrdinal(schemeCategory20);
   }
 
   render () {
@@ -65,13 +62,15 @@ export default class Chart extends VisComponent {
     let counts = {
       normal: this.clusters.count()
     };
+    let keys = ['normal'];
     this.clusters.anomalousCounts().forEach((c, i) => {
-      counts[`Cluster ${i}`] = c;
+      counts[i] = c;
+      keys.push(String(i));
     });
 
     this.data.add(counts);
 
-    const keys = Object.keys(counts);
+    console.log(keys);
 
     this.data.data.forEach(d => {
       keys.forEach(key => {
@@ -96,7 +95,13 @@ export default class Chart extends VisComponent {
       .append('path')
       .classed('area', true)
       .merge(layer)
-      .style('fill', d => this.color(d.key))
+      .style('fill', (d, i) => {
+        if (d.key === 'normal') {
+          return 'gray';
+        } else {
+          return this.color(d.key);
+        }
+      })
       .attr('d', this.area);
   }
 

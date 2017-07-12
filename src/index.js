@@ -1,3 +1,5 @@
+import { scaleOrdinal,
+         schemeCategory20 } from 'd3-scale';
 import { select } from 'd3-selection';
 
 import { action,
@@ -74,18 +76,21 @@ let table = new Table(select('#table').node(), {
 table.render();
 
 const interval = () => store.getState().getIn(['playback', 'interval']);
+const color = scaleOrdinal(schemeCategory20);
 
 // Instantiate bubble view.
 let bubble = new Bubble(select('#bubble').node(), {
   dataWindow,
-  interval
+  interval,
+  color
 });
 bubble.render();
 
 // Instantiate chart view.
 let chart = new Chart(select('#chart').node(), {
   dataWindow: bigDataWindow,
-  interval
+  interval,
+  color
 });
 chart.render();
 
