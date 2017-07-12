@@ -47,7 +47,7 @@ export default class Clusters {
 
   hierarchy () {
     return hierarchy(this.data)
-      .sum(d => d.value || 0.1);
+      .sum(d => d.value || 0.01);
   }
 
   count () {
