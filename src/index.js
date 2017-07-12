@@ -58,7 +58,9 @@ select('#faster').on('click', () => {
 });
 
 // Create a data window object.
-let dataWindow = new DataWindow();
+let dataWindow = new DataWindow({
+  size: 100
+});
 let bigDataWindow = new DataWindow({
   size: 100
 });
