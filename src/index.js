@@ -66,6 +66,7 @@ let bigDataWindow = new DataWindow({
 });
 
 // Instantiate table view.
+const color = scaleOrdinal(schemeCategory20);
 let table = new Table(select('#table').node(), {
   dataWindow,
   headers: [
@@ -73,12 +74,12 @@ let table = new Table(select('#table').node(), {
     'proto',
     'anomalous',
     'cluster'
-  ]
+  ],
+  color
 });
 table.render();
 
 const interval = () => store.getState().getIn(['playback', 'interval']);
-const color = scaleOrdinal(schemeCategory20);
 
 // Instantiate bubble view.
 let bubble = new Bubble(select('#bubble').node(), {
