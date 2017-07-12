@@ -49,4 +49,14 @@ export default class Clusters {
     return hierarchy(this.data)
       .sum(d => d.value || 0.1);
   }
+
+  count () {
+    return this.data.children[0].value;
+  }
+
+  anomalousCounts () {
+    return this.data.children[1].children
+      .sort((a, b) => a.cluster - b.cluster)
+      .map(d => d.value);
+  }
 }

@@ -57,6 +57,9 @@ select('#faster').on('click', () => {
 
 // Create a data window object.
 let dataWindow = new DataWindow();
+let bigDataWindow = new DataWindow({
+  size: 100
+});
 
 // Instantiate table view.
 let table = new Table(select('#table').node(), {
@@ -70,18 +73,21 @@ let table = new Table(select('#table').node(), {
 });
 table.render();
 
-// Instantiate chart view.
-let chart = new Chart(select('#chart').node(), {
-  dataWindow
-});
-chart.render();
+const interval = () => store.getState().getIn(['playback', 'interval']);
 
 // Instantiate bubble view.
 let bubble = new Bubble(select('#bubble').node(), {
   dataWindow,
-  interval: () => store.getState().getIn(['playback', 'interval'])
+  interval
 });
 bubble.render();
+
+// Instantiate chart view.
+let chart = new Chart(select('#chart').node(), {
+  dataWindow: bigDataWindow,
+  interval
+});
+chart.render();
 
 // Install reactive actions to changes in the store.
 //
@@ -93,15 +99,20 @@ observeStore(next => {
   console.log(index, data);
 
   // Add the new data item to the data window.
-  dataWindow.add(Object.assign({
+  const datum = Object.assign({
     index
-  }, data));
+  }, data);
+  dataWindow.add(datum);
+  bigDataWindow.add(datum);
 
   // Re-render the table view.
   table.render();
 
   // Re-render the bubble view.
   bubble.render();
+
+  // Re-render the chart view.
+  chart.render();
 
   // Disable the rewind button whenever playback is at the very start of the
   // data.
