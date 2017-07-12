@@ -1,14 +1,12 @@
 import { easeLinear } from 'd3-ease';
-import { hierarchy,
-         pack } from 'd3-hierarchy';
-import { scaleOrdinal,
-         schemeCategory20 } from 'd3-scale';
+import { pack } from 'd3-hierarchy';
 import { select } from 'd3-selection';
 import { transition } from 'd3-transition';
 
 import VisComponent from 'candela/VisComponent';
 
 import content from './index.jade';
+import Clusters from '~/util/Clusters';
 
 export default class Bubble extends VisComponent {
   constructor (el, options) {
@@ -23,39 +21,27 @@ export default class Bubble extends VisComponent {
     // updates.
     this.interval = options.interval || (() => 0);
 
-    // Construct an initial hierarchy.
-    this.data = {
-      children: [
-        {
-          cluster: 'non-anomalous',
-          value: 0
-        },
-        {
-          cluster: 'anomalous',
-          value: 0,
-          children: []
-        }
-      ]
-    };
+    // Grab a colormap object from the options.
+    this.color = options.color;
 
+    // Construct an initial hierarchy.
+    this.data = new Clusters();
+
+    const width = 620.5;
+    const height = 400;
     select(this.el)
       .html(content({
-        width: '620.5px',
-        height: '400px'
+        width,
+        height
       }));
+
+    this.bubbles = pack()
+      .size([width, height])
+      .padding(3);
   }
 
   render () {
-    let bubbles = pack()
-      .size([620.5, 400])
-      .padding(3);
-
-    let root = hierarchy(this.data)
-      .sum(d => d.value || 0.1);
-
-    bubbles(root);
-
-    const color = scaleOrdinal(schemeCategory20);
+    const root = this.bubbles(this.data.hierarchy());
 
     select(this.el)
       .select('svg')
@@ -89,55 +75,24 @@ export default class Bubble extends VisComponent {
         } else if (d.depth === 1) {
           return 'gray';
         } else {
-          return color(d.data.cluster);
+          return this.color(d.data.cluster);
         }
       });
   }
 
   add (d) {
     if (d.anomalous) {
-      if (this.getCluster(d.cluster) === undefined) {
-        this.makeCluster(d.cluster);
-      }
-
-      this.incrementCluster(d.cluster);
+      this.data.addAnomalous(d.cluster);
     } else {
-      this.incrementNormal();
+      this.data.add();
     }
   }
 
   remove (d) {
     if (d.anomalous) {
-      this.decrementCluster(d.cluster);
+      this.data.removeAnomalous(d.cluster);
     } else {
-      this.decrementNormal();
+      this.data.remove();
     }
-  }
-
-  incrementNormal () {
-    this.data.children[0].value++;
-  }
-
-  decrementNormal () {
-    this.data.children[0].value--;
-  }
-
-  getCluster (which) {
-    return this.data.children[1].children[which];
-  }
-
-  makeCluster (which) {
-    this.data.children[1].children[which] = {
-      cluster: which,
-      value: 0
-    };
-  }
-
-  incrementCluster (which) {
-    this.data.children[1].children[which].value++;
-  }
-
-  decrementCluster (which) {
-    this.data.children[1].children[which].value--;
   }
 }

@@ -11,6 +11,7 @@ export default class Table extends VisComponent {
 
     this.dataWindow = options.dataWindow;
     this.headers = options.headers;
+    this.color = options.color;
 
     select(this.el).html(content({
       headers: this.headers
@@ -26,10 +27,19 @@ export default class Table extends VisComponent {
     sel.enter()
       .append(d => stringToElement(row({
         data: d,
-        headers: this.headers
+        headers: this.headers,
+        color: this.computeColor(d)
       })));
 
     sel.exit()
       .remove();
+  }
+
+  computeColor (d) {
+    if (!d.anomalous) {
+      return 'gray';
+    } else {
+      return this.color(d.cluster);
+    }
   }
 }

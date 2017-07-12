@@ -1,3 +1,5 @@
+import { scaleOrdinal,
+         schemeCategory20 } from 'd3-scale';
 import { select } from 'd3-selection';
 
 import { action,
@@ -56,9 +58,15 @@ select('#faster').on('click', () => {
 });
 
 // Create a data window object.
-let dataWindow = new DataWindow();
+let dataWindow = new DataWindow({
+  size: 100
+});
+let bigDataWindow = new DataWindow({
+  size: 100
+});
 
 // Instantiate table view.
+const color = scaleOrdinal(schemeCategory20);
 let table = new Table(select('#table').node(), {
   dataWindow,
   headers: [
@@ -66,22 +74,28 @@ let table = new Table(select('#table').node(), {
     'proto',
     'anomalous',
     'cluster'
-  ]
+  ],
+  color
 });
 table.render();
 
-// Instantiate chart view.
-let chart = new Chart(select('#chart').node(), {
-  dataWindow
-});
-chart.render();
+const interval = () => store.getState().getIn(['playback', 'interval']);
 
 // Instantiate bubble view.
 let bubble = new Bubble(select('#bubble').node(), {
   dataWindow,
-  interval: () => store.getState().getIn(['playback', 'interval'])
+  interval,
+  color
 });
 bubble.render();
+
+// Instantiate chart view.
+let chart = new Chart(select('#chart').node(), {
+  dataWindow: bigDataWindow,
+  interval,
+  color
+});
+chart.render();
 
 // Install reactive actions to changes in the store.
 //
@@ -93,15 +107,20 @@ observeStore(next => {
   console.log(index, data);
 
   // Add the new data item to the data window.
-  dataWindow.add(Object.assign({
+  const datum = Object.assign({
     index
-  }, data));
+  }, data);
+  dataWindow.add(datum);
+  bigDataWindow.add(datum);
 
   // Re-render the table view.
   table.render();
 
   // Re-render the bubble view.
   bubble.render();
+
+  // Re-render the chart view.
+  chart.render();
 
   // Disable the rewind button whenever playback is at the very start of the
   // data.
