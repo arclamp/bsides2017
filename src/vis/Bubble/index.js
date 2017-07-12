@@ -1,6 +1,5 @@
 import { easeLinear } from 'd3-ease';
-import { hierarchy,
-         pack } from 'd3-hierarchy';
+import { pack } from 'd3-hierarchy';
 import { scaleOrdinal,
          schemeCategory20 } from 'd3-scale';
 import { select } from 'd3-selection';
@@ -9,6 +8,7 @@ import { transition } from 'd3-transition';
 import VisComponent from 'candela/VisComponent';
 
 import content from './index.jade';
+import Clusters from '~/util/Clusters';
 
 export default class Bubble extends VisComponent {
   constructor (el, options) {
@@ -24,19 +24,7 @@ export default class Bubble extends VisComponent {
     this.interval = options.interval || (() => 0);
 
     // Construct an initial hierarchy.
-    this.data = {
-      children: [
-        {
-          cluster: 'non-anomalous',
-          value: 0
-        },
-        {
-          cluster: 'anomalous',
-          value: 0,
-          children: []
-        }
-      ]
-    };
+    this.data = new Clusters();
 
     select(this.el)
       .html(content({
@@ -50,11 +38,7 @@ export default class Bubble extends VisComponent {
       .size([620.5, 400])
       .padding(3);
 
-    let root = hierarchy(this.data)
-      .sum(d => d.value || 0.1);
-
-    bubbles(root);
-
+    const root = bubbles(this.data.hierarchy());
     const color = scaleOrdinal(schemeCategory20);
 
     select(this.el)
@@ -96,48 +80,17 @@ export default class Bubble extends VisComponent {
 
   add (d) {
     if (d.anomalous) {
-      if (this.getCluster(d.cluster) === undefined) {
-        this.makeCluster(d.cluster);
-      }
-
-      this.incrementCluster(d.cluster);
+      this.data.addAnomalous(d.cluster);
     } else {
-      this.incrementNormal();
+      this.data.add();
     }
   }
 
   remove (d) {
     if (d.anomalous) {
-      this.decrementCluster(d.cluster);
+      this.data.removeAnomalous(d.cluster);
     } else {
-      this.decrementNormal();
+      this.data.remove();
     }
-  }
-
-  incrementNormal () {
-    this.data.children[0].value++;
-  }
-
-  decrementNormal () {
-    this.data.children[0].value--;
-  }
-
-  getCluster (which) {
-    return this.data.children[1].children[which];
-  }
-
-  makeCluster (which) {
-    this.data.children[1].children[which] = {
-      cluster: which,
-      value: 0
-    };
-  }
-
-  incrementCluster (which) {
-    this.data.children[1].children[which].value++;
-  }
-
-  decrementCluster (which) {
-    this.data.children[1].children[which].value--;
   }
 }
