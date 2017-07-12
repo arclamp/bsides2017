@@ -26,19 +26,21 @@ export default class Bubble extends VisComponent {
     // Construct an initial hierarchy.
     this.data = new Clusters();
 
+    const width = 620.5;
+    const height = 400;
     select(this.el)
       .html(content({
-        width: '620.5px',
-        height: '400px'
+        width,
+        height
       }));
+
+    this.bubbles = pack()
+      .size([width, height])
+      .padding(3);
   }
 
   render () {
-    let bubbles = pack()
-      .size([620.5, 400])
-      .padding(3);
-
-    const root = bubbles(this.data.hierarchy());
+    const root = this.bubbles(this.data.hierarchy());
     const color = scaleOrdinal(schemeCategory20);
 
     select(this.el)
