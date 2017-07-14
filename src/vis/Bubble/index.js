@@ -6,6 +6,7 @@ import { transition } from 'd3-transition';
 import VisComponent from 'candela/VisComponent';
 
 import content from './index.jade';
+import './index.styl';
 import Clusters from '~/util/Clusters';
 
 export default class Bubble extends VisComponent {
@@ -50,10 +51,7 @@ export default class Bubble extends VisComponent {
       .enter()
       .append('g')
       .append('circle')
-      .style('stroke-width', '1px')
-      .style('stroke', 'black')
       .on('click', function (d) {
-        console.log('clicked on circle', d);
         const selected = select(this).classed('selected');
         select(this)
           .classed('selected', !selected);
