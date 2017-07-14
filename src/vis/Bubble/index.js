@@ -8,6 +8,9 @@ import VisComponent from 'candela/VisComponent';
 import content from './index.jade';
 import './index.styl';
 import Clusters from '~/util/Clusters';
+import { action,
+         store,
+         observeStore } from '~/redux';
 
 export default class Bubble extends VisComponent {
   constructor (el, options) {
@@ -39,6 +42,16 @@ export default class Bubble extends VisComponent {
     this.bubbles = pack()
       .size([width, height])
       .padding(3);
+
+    observeStore(next => {
+      const cluster = next.get('selected');
+      select(this.el)
+        .selectAll('circle')
+        .classed('selected', function () {
+          const myCluster = select(this).attr('data-cluster');
+          return myCluster && myCluster === cluster;
+        });
+    }, s => s.get('selected'));
   }
 
   render () {
@@ -51,10 +64,21 @@ export default class Bubble extends VisComponent {
       .enter()
       .append('g')
       .append('circle')
+      .attr('data-cluster', d => d.data.cluster)
       .on('click', function (d) {
-        const selected = select(this).classed('selected');
-        select(this)
-          .classed('selected', !selected);
+        const which = select(this).attr('data-cluster');
+        console.log(which);
+
+        if (which === 'undefined' || which === 'anomalous') {
+          store.dispatch(action.unselect());
+        } else {
+          const selected = select(this).classed('selected');
+          if (selected) {
+            store.dispatch(action.unselect());
+          } else {
+            store.dispatch(action.select(which));
+          }
+        }
       });
 
     const t = transition()

@@ -7,6 +7,7 @@ const initial = Immutable.fromJS({
     data: null,
     index: 0
   },
+  selected: null,
   playback: {
     interval: 1000,
     intervalHigh: 1000,
@@ -61,6 +62,14 @@ const reducer = (state = initial, action = {}) => {
         }
         return x;
       });
+      break;
+
+    case actionType.select:
+      newState = state.set('selected', action.cluster);
+      break;
+
+    case actionType.unselect:
+      newState = state.set('selected', null);
       break;
   }
 
