@@ -104,8 +104,6 @@ observeStore(next => {
   const index = next.getIn(['datastream', 'index']);
   const data = next.getIn(['datastream', 'data'])[index];
 
-  console.log(index, data);
-
   // Add the new data item to the data window.
   const datum = Object.assign({
     index
