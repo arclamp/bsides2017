@@ -1,10 +1,12 @@
 import { select } from 'd3-selection';
 
 import VisComponent from 'candela/VisComponent';
-import content from './index.jade';
-import row from './row.jade';
 import stringToElement from '~/util/stringToElement';
 import { observeStore } from '~/redux';
+
+import content from './index.jade';
+import row from './row.jade';
+import './index.styl';
 
 export default class Table extends VisComponent {
   constructor (el, options) {
