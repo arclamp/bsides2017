@@ -9,7 +9,9 @@ import content from './index.jade';
 import './index.styl';
 import DataWindow from '~/util/DataWindow';
 import Clusters from '~/util/Clusters';
-import { observeStore } from '~/redux';
+import { action,
+         store,
+         observeStore } from '~/redux';
 
 export default class Chart extends VisComponent {
   constructor (el, options) {
@@ -121,6 +123,19 @@ export default class Chart extends VisComponent {
           return 'non-anomalous';
         } else {
           return d.key;
+        }
+      })
+      .on('click', function (d) {
+        const which = select(this).attr('data-cluster');
+        if (which === 'undefined' || which === 'anomalous') {
+          store.dispatch(action.unselect());
+        } else {
+          const selected = select(this).classed('selected');
+          if (selected) {
+            store.dispatch(action.unselect());
+          } else {
+            store.dispatch(action.select(which));
+          }
         }
       });
 

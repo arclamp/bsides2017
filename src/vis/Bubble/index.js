@@ -67,8 +67,6 @@ export default class Bubble extends VisComponent {
       .attr('data-cluster', d => d.data.cluster)
       .on('click', function (d) {
         const which = select(this).attr('data-cluster');
-        console.log(which);
-
         if (which === 'undefined' || which === 'anomalous') {
           store.dispatch(action.unselect());
         } else {
