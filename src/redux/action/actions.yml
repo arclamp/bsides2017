@@ -13,3 +13,8 @@ stop: []
 increaseSpeed: []
 
 decreaseSpeed: []
+
+select:
+  - cluster
+
+unselect: []

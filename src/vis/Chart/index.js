@@ -6,8 +6,12 @@ import { area,
 import VisComponent from 'candela/VisComponent';
 
 import content from './index.jade';
+import './index.styl';
 import DataWindow from '~/util/DataWindow';
 import Clusters from '~/util/Clusters';
+import { action,
+         store,
+         observeStore } from '~/redux';
 
 export default class Chart extends VisComponent {
   constructor (el, options) {
@@ -51,10 +55,27 @@ export default class Chart extends VisComponent {
 
     this.stack = stack();
 
-    window.area = this.area = area()
+    this.area = area()
       .x((d, i) => x(i))
       .y0(d => y(d[0]))
       .y1(d => y(d[1]));
+
+    observeStore(next => {
+      const cluster = next.get('selected');
+      select(this.el)
+        .selectAll('path.area')
+        .classed('selected', function () {
+          const myCluster = select(this).attr('data-cluster');
+          const selected = myCluster && myCluster === cluster;
+
+          if (selected) {
+            const g = this.parentNode;
+            g.parentNode.appendChild(g);
+          }
+
+          return selected;
+        });
+    }, s => s.get('selected'));
   }
 
   render () {
@@ -70,8 +91,6 @@ export default class Chart extends VisComponent {
 
     this.data.add(counts);
 
-    console.log(keys);
-
     this.data.data.forEach(d => {
       keys.forEach(key => {
         d[key] = d[key] || 0;
@@ -80,11 +99,9 @@ export default class Chart extends VisComponent {
 
     const stacks = this.stack.keys(keys)(this.data.data);
 
-    this.chart.selectAll('*')
-      .remove();
-
-    const layer = this.chart.selectAll('.layer')
-      .data(stacks);
+    const layer = this.chart
+      .selectAll('g.layer')
+      .data(stacks, d => d.key);
 
     layer.exit()
       .remove();
@@ -94,7 +111,6 @@ export default class Chart extends VisComponent {
       .classed('layer', true)
       .append('path')
       .classed('area', true)
-      .merge(layer)
       .style('fill', (d, i) => {
         if (d.key === 'normal') {
           return 'gray';
@@ -102,6 +118,29 @@ export default class Chart extends VisComponent {
           return this.color(d.key);
         }
       })
+      .attr('data-cluster', d => {
+        if (d.key === 'normal') {
+          return 'non-anomalous';
+        } else {
+          return d.key;
+        }
+      })
+      .on('click', function (d) {
+        const which = select(this).attr('data-cluster');
+        if (which === 'undefined' || which === 'anomalous') {
+          store.dispatch(action.unselect());
+        } else {
+          const selected = select(this).classed('selected');
+          if (selected) {
+            store.dispatch(action.unselect());
+          } else {
+            store.dispatch(action.select(which));
+          }
+        }
+      });
+
+    this.chart.selectAll('path')
+      .data(stacks, d => d.key)
       .attr('d', this.area);
   }
 

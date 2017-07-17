@@ -1,9 +1,12 @@
 import { select } from 'd3-selection';
 
 import VisComponent from 'candela/VisComponent';
+import stringToElement from '~/util/stringToElement';
+import { observeStore } from '~/redux';
+
 import content from './index.jade';
 import row from './row.jade';
-import stringToElement from '~/util/stringToElement';
+import './index.styl';
 
 export default class Table extends VisComponent {
   constructor (el, options) {
@@ -16,6 +19,11 @@ export default class Table extends VisComponent {
     select(this.el).html(content({
       headers: this.headers
     }));
+
+    observeStore(next => {
+      this.filter = next.get('selected');
+      this.render();
+    }, s => s.get('selected'));
   }
 
   render () {
@@ -29,7 +37,17 @@ export default class Table extends VisComponent {
         data: d,
         headers: this.headers,
         color: this.computeColor(d)
-      })));
+      })))
+      .merge(sel)
+      .classed('hidden', d => {
+        if (this.filter === null) {
+          return false;
+        } else if (this.filter === 'non-anomalous') {
+          return d.anomalous;
+        } else {
+          return d.cluster !== +this.filter;
+        }
+      });
 
     sel.exit()
       .remove();
