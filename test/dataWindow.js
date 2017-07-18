@@ -109,5 +109,16 @@ test('SliceWindow fixed behavior', t => {
   t.deepEqual(dw.data, data.map(x => x + 1), 'Overfull DataWindow has 1..100');
   t.deepEqual(slice1.data, toFifty.map(x => x + 1), 'SliceWindow has 41..50');
 
+  slice1.setSize(5);
+  t.deepEqual(slice1.data, toFifty.map(x => x + 1).slice(0, 5), 'SliceWindow has 41..45');
+
+  slice1.setStart(45);
+  t.deepEqual(slice1.data, toFifty.map(x => x + 1).slice(5), 'SliceWindow has 46..50');
+
+  slice1.setStart(98);
+  t.equal(slice1.start, 98, 'SlideWindow start point is 99');
+  t.equal(slice1.size, 2, 'SlideWindow size truncated to 2');
+  t.deepEqual(slice1.data, dw.data.slice(-2), 'SlideWindow data is equal to last two elements of DataWindow');
+
   t.end();
 });

@@ -75,6 +75,10 @@ export class SliceWindow extends Events(A) {
   setStart (start) {
     if (this.start !== start) {
       this.start = start;
+      if (this.start + this.size > this.dataWindow.size) {
+        this.size = this.dataWindow.size - this.start;
+      }
+
       this._hydrate();
 
       this.emit('changed', this.data);
@@ -84,6 +88,10 @@ export class SliceWindow extends Events(A) {
   setSize (size) {
     if (this.size !== size) {
       this.size = size;
+      if (this.start + this.size > this.dataWindow.size) {
+        this.start = this.dataWindow.size - this.size;
+      }
+
       this._hydrate();
 
       this.emit('changed', this.data);
