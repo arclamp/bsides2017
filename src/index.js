@@ -62,10 +62,19 @@ let dataWindow = new DataWindow({
   size: 100
 });
 
-// Instantiate table view.
+// Instantiate chart view.
 const color = scaleOrdinal(schemeCategory20);
-let table = new Table(select('#table').node(), {
+const interval = () => store.getState().getIn(['playback', 'interval']);
+let chart = new Chart(select('#chart').node(), {
   dataWindow,
+  interval,
+  color
+});
+chart.render();
+
+// Instantiate table view.
+let table = new Table(select('#table').node(), {
+  dataWindow: chart.slider,
   headers: [
     'TTLs',
     'proto',
@@ -76,23 +85,13 @@ let table = new Table(select('#table').node(), {
 });
 table.render();
 
-const interval = () => store.getState().getIn(['playback', 'interval']);
-
 // Instantiate bubble view.
 let bubble = new Bubble(select('#bubble').node(), {
-  dataWindow,
+  dataWindow: chart.slider,
   interval,
   color
 });
 bubble.render();
-
-// Instantiate chart view.
-let chart = new Chart(select('#chart').node(), {
-  dataWindow,
-  interval,
-  color
-});
-chart.render();
 
 // Install reactive actions to changes in the store.
 //

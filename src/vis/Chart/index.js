@@ -7,7 +7,7 @@ import VisComponent from 'candela/VisComponent';
 
 import content from './index.jade';
 import './index.styl';
-import DataWindow from '~/util/DataWindow';
+import DataWindow, { SliceWindow } from '~/util/DataWindow';
 import Clusters from '~/util/Clusters';
 import { action,
          store,
@@ -25,10 +25,16 @@ export default class Chart extends VisComponent {
     this.data = new DataWindow({
       size
     });
+
     this.clusters = new Clusters();
 
     options.dataWindow.on('added', d => this.add(d));
     options.dataWindow.on('deleted', d => this.remove(d));
+
+    this.slider = new SliceWindow({
+      size: 30,
+      dataWindow: options.dataWindow
+    });
 
     this.margin = {
       top: 20,
