@@ -49,7 +49,7 @@ export class SliceWindow extends Events(A) {
     // React to data additions in the target data window; deletions occur
     // naturally, as data is pushed out of the slice's window.
     dataWindow.on('added', d => {
-      if (dataWindow.data.length <= this.start + this.size) {
+      if (this.currentPostion < this.start) {
         let deleted = null;
         this.data.push(d);
         if (this.data.length > this.size) {
@@ -60,6 +60,7 @@ export class SliceWindow extends Events(A) {
         if (deleted) {
           this.emit('deleted', deleted);
         }
+        this.currentPostion++;
       } else if (this.filled) {
         const oldDatum = this.data[0];
         const newDatum = this.dataWindow.data[this.start + this.size - 1];
@@ -69,7 +70,9 @@ export class SliceWindow extends Events(A) {
 
         this.emit('added', newDatum);
         this.emit('deleted', oldDatum);
-      } else if (dataWindow.data.length === dataWindow.size) {
+      }
+
+      if (dataWindow.data.length === dataWindow.size) {
         this.filled = true;
       }
     });
@@ -104,10 +107,10 @@ export class SliceWindow extends Events(A) {
   _hydrate () {
     if (this.dataWindow.data.length >= this.start + this.size) {
       this.data = this.dataWindow.data.slice(this.start, this.start + this.size);
-      this.filled = this.start + this.size;
+      this.currentPostion = this.start;
     } else {
       this.data = this.dataWindow.data.slice(-1 * this.size);
-      this.filled = this.data.length;
+      this.currentPostion = this.data.length - this.size;
     }
   }
 }

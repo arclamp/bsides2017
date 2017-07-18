@@ -82,43 +82,53 @@ test('SliceWindow fixed behavior', t => {
     dataWindow: dw
   });
 
+  t.equal(slice1.currentPostion, -10, 'SliceWindow current position starts at -10');
+
   const data = [...Array(100).keys()];
   const forty = data.slice(0, 40);
   forty.forEach(d => dw.add(d));
 
   t.deepEqual(dw.data, forty, 'DataWindow has 0..39');
   t.deepEqual(slice1.data, forty.slice(-10), 'SliceWindow has 30..39');
+  t.equal(slice1.currentPostion, 30, 'SliceWindow current position moved to 30');
 
   const toFifty = data.slice(40, 50);
   toFifty.forEach(d => dw.add(d));
 
   t.deepEqual(dw.data, data.slice(0, 50), 'DataWindow has 0..49');
   t.deepEqual(slice1.data, toFifty, 'SliceWindow has 40..49');
+  t.equal(slice1.currentPostion, 40, 'SliceWindow current position moved to 40');
 
   dw.add(50);
   t.deepEqual(dw.data, data.slice(0, 51), 'DataWindow has 0..50');
   t.deepEqual(slice1.data, toFifty, 'SliceWindow still has 40..49');
+  t.equal(slice1.currentPostion, 40, 'SliceWindow current position stayed at 40');
 
   const rest = data.slice(51);
   rest.forEach(d => dw.add(d));
 
   t.deepEqual(dw.data, data, 'Full DataWindow has 0..99');
   t.deepEqual(slice1.data, toFifty, 'SliceWindow still has 40..49');
+  t.equal(slice1.currentPostion, 40, 'SliceWindow current position stayed at 40');
 
   dw.add(100);
   t.deepEqual(dw.data, data.map(x => x + 1), 'Overfull DataWindow has 1..100');
   t.deepEqual(slice1.data, toFifty.map(x => x + 1), 'SliceWindow has 41..50');
+  t.equal(slice1.currentPostion, 40, 'SliceWindow current position stayed at 40');
 
   slice1.setSize(5);
   t.deepEqual(slice1.data, toFifty.map(x => x + 1).slice(0, 5), 'SliceWindow has 41..45');
+  t.equal(slice1.currentPostion, 40, 'SliceWindow current position stayed at 40');
 
   slice1.setStart(45);
   t.deepEqual(slice1.data, toFifty.map(x => x + 1).slice(5), 'SliceWindow has 46..50');
+  t.equal(slice1.currentPostion, 45, 'SliceWindow current position stayed at 40');
 
   slice1.setStart(98);
   t.equal(slice1.start, 98, 'SlideWindow start point is 99');
   t.equal(slice1.size, 2, 'SlideWindow size truncated to 2');
   t.deepEqual(slice1.data, dw.data.slice(-2), 'SlideWindow data is equal to last two elements of DataWindow');
+  t.equal(slice1.currentPostion, 98, 'SliceWindow current position stayed at 40');
 
   t.end();
 });
