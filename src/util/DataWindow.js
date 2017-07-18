@@ -20,7 +20,10 @@ export default class DataWindow extends Events(A) {
     }
 
     this.emit('added', d);
-    this.emit('deleted', deleted);
+
+    if (deleted) {
+      this.emit('deleted', deleted);
+    }
   }
 }
 
