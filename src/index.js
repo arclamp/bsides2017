@@ -70,10 +70,16 @@ const color = scaleOrdinal(schemeCategory20);
 let table = new Table(select('#table').node(), {
   dataWindow,
   headers: [
-    'TTLs',
+    'Z',
+    'rejected',
     'proto',
-    'anomalous',
-    'cluster'
+    'query',
+    'qclass_name',
+    'qtype_name',
+    'rcode_name',
+    'query_length',
+    'cluster',
+    'anomalous'
   ],
   color
 });
