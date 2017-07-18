@@ -61,9 +61,6 @@ select('#faster').on('click', () => {
 let dataWindow = new DataWindow({
   size: 100
 });
-let bigDataWindow = new DataWindow({
-  size: 100
-});
 
 // Instantiate table view.
 const color = scaleOrdinal(schemeCategory20);
@@ -91,7 +88,7 @@ bubble.render();
 
 // Instantiate chart view.
 let chart = new Chart(select('#chart').node(), {
-  dataWindow: bigDataWindow,
+  dataWindow,
   interval,
   color
 });
@@ -109,7 +106,6 @@ observeStore(next => {
     index
   }, data);
   dataWindow.add(datum);
-  bigDataWindow.add(datum);
 
   // Re-render the table view.
   table.render();
