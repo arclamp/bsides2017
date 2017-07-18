@@ -8,6 +8,7 @@ import VisComponent from 'candela/VisComponent';
 import content from './index.jade';
 import './index.styl';
 import Clusters from '~/util/Clusters';
+import { SliceWindow } from '~/util/DataWindow';
 import { action,
          store,
          observeStore } from '~/redux';
@@ -52,6 +53,10 @@ export default class Bubble extends VisComponent {
           return myCluster && myCluster === cluster;
         });
     }, s => s.get('selected'));
+
+    window.slider = new SliceWindow({
+      dataWindow: options.dataWindow
+    });
   }
 
   render () {

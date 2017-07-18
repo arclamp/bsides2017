@@ -61,9 +61,12 @@ test('SliceWindow default behavior', t => {
   t.deepEqual(slice1.data, ten, 'SliceWindow has 0..9');
 
   data.slice(10).forEach(d => dw.add(d));
-
   t.deepEqual(dw.data, data, 'DataWindow has 0..99');
   t.deepEqual(slice1.data, data.slice(-10), 'SliceWindow has 90..99');
+
+  dw.add(100);
+  t.deepEqual(dw.data, data.map(x => x + 1), 'DataWindow has 1..100');
+  t.deepEqual(slice1.data, data.slice(-10).map(x => x + 1), 'SliceWindow has 91..100');
 
   t.end();
 });
