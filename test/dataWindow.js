@@ -3,7 +3,6 @@ import test from 'tape-catch';
 import DataWindow, { SliceWindow } from '~/util/DataWindow';
 
 test('DataWindow module exports', t => {
-
   t.ok(DataWindow, 'DataWindow exists');
   t.equal(typeof DataWindow, 'function', 'DataWindow is a function');
 
@@ -13,7 +12,7 @@ test('DataWindow module exports', t => {
   t.end();
 });
 
-test('DataWindow behavior', t => {
+test('Uninitialized DataWindow behavior', t => {
   let dw = new DataWindow();
 
   t.equal(dw.size, 10, 'Default size of DataWindow is 10');
@@ -29,6 +28,10 @@ test('DataWindow behavior', t => {
   [11, 12, 13, 14].forEach(val => dw.add(val));
   t.equal(dw.data.length, 10, 'Overfilling DataWindow: adding more items means maximum data length');
 
+  t.end();
+});
+
+test('Initialized DataWindow behavior', t => {
   let dw2 = new DataWindow({
     size: 15,
     initial: [1, 2, 3, 4]

@@ -33,6 +33,7 @@
     "style-loader": "^0.18.2",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1",
+    "tap-spec": "^4.1.1",
     "tape": "^4.7.0",
     "tape-catch": "^1.0.6",
     "url-loader": "^0.5.9",
@@ -42,6 +43,7 @@
   "scripts": {
     "build": "webpack",
     "watch": "webpack --watch",
+    "test": "node build/test.js | tap-spec",
     "serve": "http-server build",
     "lint": "semistandard | snazzy"
   },
