@@ -86,23 +86,34 @@ export default class Chart extends VisComponent {
         console.log('drag end');
       });
 
-    const sliderDrag2 = drag()
-      .on('start', () => {
-        console.log('drag start');
-      })
-      .on('drag', function () {
-        const g = select(this);
-        const circle = g.select('circle');
-        const line = g.select('line');
-        const newX = +circle.attr('cx') + event.dx;
+    const sliderDrag2 = (() => {
+      const self = this;
 
-        circle.attr('cx', newX);
-        line.attr('x1', newX)
-          .attr('x2', newX);
-      })
-      .on('end', () => {
-        console.log('drag end');
-      });
+      return drag()
+        .on('start', () => {
+          console.log('drag start');
+        })
+        .on('drag', function () {
+          const g = select(this);
+          const circle = g.select('circle');
+          const line = g.select('line');
+          const newX = +circle.attr('cx') + event.dx;
+
+          circle.attr('cx', newX);
+          line.attr('x1', newX)
+            .attr('x2', newX);
+        })
+        .on('end', function () {
+          console.log('drag end');
+
+          const x = +select(this)
+            .select('circle')
+            .attr('cx');
+
+          console.log('final x position', x);
+          console.log('unprojected', self.scale.x.invert(x));
+        });
+    })();
 
     select(this.el)
       .select('rect.slider')
