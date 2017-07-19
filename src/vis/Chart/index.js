@@ -108,6 +108,9 @@ export default class Chart extends VisComponent {
           const x = +select(this)
             .select('circle')
             .attr('cx');
+
+          const pos = self.scale.x.invert(x);
+          console.log(self.data.data[pos]);
         });
     })();
 
