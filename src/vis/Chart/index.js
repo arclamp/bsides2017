@@ -57,7 +57,7 @@ export default class Chart extends VisComponent {
       .select('g.layers');
 
     this.scale = {
-      x: scaleLinear().range([0, this.width]).domain([0, size]).clamp(true),
+      x: scaleLinear().range([0, this.width]).domain([0, size]),
       y: scaleLinear().range([this.height, 0]).domain([0, 100])
     };
 
@@ -86,18 +86,28 @@ export default class Chart extends VisComponent {
 
           curX += event.dx;
 
-          const truncX = self.scale.x(Math.floor(self.scale.x.invert(curX)));
+          // Truncate the slider position to an integer value lying between 0
+          // and the number of elements in the history window.
+          let sliderAutoUpdate = false;
+          let truncX = Math.floor(self.scale.x.invert(curX));
+          if (truncX > self.data.data.length - 1) {
+            truncX = self.data.data.length - 1;
+            sliderAutoUpdate = true;
+          } else if (truncX < 0) {
+            truncX = 0;
+          }
+          truncX = self.scale.x(truncX);
 
           circle.attr('cx', truncX);
           line.attr('x1', truncX)
             .attr('x2', truncX);
+
+          self.sliderAutoUpdate = sliderAutoUpdate;
         })
         .on('end', function () {
           const x = +select(this)
             .select('circle')
             .attr('cx');
-
-          self.sliderAutoUpdate = false;
         });
     })();
 
