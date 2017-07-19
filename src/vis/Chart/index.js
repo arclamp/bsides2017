@@ -60,7 +60,7 @@ export default class Chart extends VisComponent {
       .select('g.layers');
 
     this.scale = {
-      x: scaleLinear().range([0, this.width]).domain([0, size]),
+      x: scaleLinear().range([0, this.width]).domain([0, size]).clamp(true),
       y: scaleLinear().range([this.height, 0]).domain([0, 100])
     };
 
@@ -74,29 +74,31 @@ export default class Chart extends VisComponent {
     const sliderDrag = (() => {
       const self = this;
 
+      let curX;
+
       return drag()
-        .on('start', () => {
-          console.log('drag start');
+        .on('start', function () {
+          curX = +select(this)
+            .select('circle')
+            .attr('cx');
         })
         .on('drag', function () {
           const g = select(this);
           const circle = g.select('circle');
           const line = g.select('line');
-          const newX = +circle.attr('cx') + event.dx;
 
-          circle.attr('cx', newX);
-          line.attr('x1', newX)
-            .attr('x2', newX);
+          curX += event.dx;
+
+          const truncX = self.scale.x(Math.floor(self.scale.x.invert(curX)));
+
+          circle.attr('cx', truncX);
+          line.attr('x1', truncX)
+            .attr('x2', truncX);
         })
         .on('end', function () {
-          console.log('drag end');
-
           const x = +select(this)
             .select('circle')
             .attr('cx');
-
-          console.log('final x position', x);
-          console.log('unprojected', self.scale.x.invert(x));
         });
     })();
 
