@@ -86,11 +86,35 @@ export default class Chart extends VisComponent {
         console.log('drag end');
       });
 
+    const sliderDrag2 = drag()
+      .on('start', () => {
+        console.log('drag start');
+      })
+      .on('drag', function () {
+        const g = select(this);
+        const circle = g.select('circle');
+        const line = g.select('line');
+        const newX = +circle.attr('cx') + event.dx;
+
+        circle.attr('cx', newX);
+        line.attr('x1', newX)
+          .attr('x2', newX);
+      })
+      .on('end', () => {
+        console.log('drag end');
+      });
+
     select(this.el)
       .select('rect.slider')
       .attr('rx', 10)
       .attr('ry', 10)
       .call(sliderDrag);
+
+    select(this.el)
+      .select('g.index')
+      .call(sliderDrag2)
+      .select('circle')
+      .attr('r', 7);
 
     observeStore(next => {
       const cluster = next.get('selected');
@@ -188,6 +212,19 @@ export default class Chart extends VisComponent {
       .attr('width', this.scale.x(width))
       .attr('y', this.scale.y(100) - 5)
       .attr('height', this.scale.y(0) + 10);
+
+    const idx = select(this.el)
+      .select('g.index');
+
+    idx.select('line')
+      .attr('x1', this.scale.x(startX))
+      .attr('y1', this.scale.y(100) - 5)
+      .attr('x2', this.scale.x(startX))
+      .attr('y2', this.scale.y(0) + 10);
+
+    idx.select('circle')
+      .attr('cx', this.scale.x(startX))
+      .attr('cy', this.scale.y(0) + 10);
   }
 
   add (d) {
