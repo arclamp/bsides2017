@@ -59,7 +59,7 @@ select('#faster').on('click', () => {
 
 // Create a data window object.
 let dataWindow = new DataWindow({
-  size: 100
+  size: 30
 });
 
 // Instantiate chart view.
@@ -74,7 +74,7 @@ chart.render();
 
 // Instantiate table view.
 let table = new Table(select('#table').node(), {
-  dataWindow: chart.slider,
+  dataWindow,
   headers: [
     'TTLs',
     'proto',
@@ -87,7 +87,7 @@ table.render();
 
 // Instantiate bubble view.
 let bubble = new Bubble(select('#bubble').node(), {
-  dataWindow: chart.slider,
+  dataWindow,
   interval,
   color
 });

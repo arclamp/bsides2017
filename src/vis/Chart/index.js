@@ -33,10 +33,7 @@ export default class Chart extends VisComponent {
     options.dataWindow.on('added', d => this.add(d));
     options.dataWindow.on('deleted', d => this.remove(d));
 
-    this.slider = new SliceWindow({
-      size: 30,
-      dataWindow: options.dataWindow
-    });
+    this.sliderAutoUpdate = true;
 
     this.margin = {
       top: 20,
@@ -99,6 +96,8 @@ export default class Chart extends VisComponent {
           const x = +select(this)
             .select('circle')
             .attr('cx');
+
+          self.sliderAutoUpdate = false;
         });
     })();
 
@@ -191,32 +190,26 @@ export default class Chart extends VisComponent {
       .data(stacks, d => d.key)
       .attr('d', this.area);
 
-    // Update the slider window.
-    const startX = Math.max(this.slider.currentPosition, 0);
-    let width = this.slider.size;
-    if (this.slider.currentPosition < 0) {
-      width += this.slider.currentPosition;
-    }
+    // Auto-update the index.
+    if (this.sliderAutoUpdate) {
+      const startX = this.data.data.length - 1;
+      if (startX === this.data.size) {
+        this.sliderAutoUpdate = false;
+      }
 
-    select(this.el)
-      .select('rect.slider')
-      .attr('x', this.scale.x(startX))
-      .attr('width', this.scale.x(width))
-      .attr('y', this.scale.y(100) - 5)
-      .attr('height', this.scale.y(0) + 10);
+      const idx = select(this.el)
+        .select('g.index');
 
-    const idx = select(this.el)
-      .select('g.index');
+      idx.select('line')
+        .attr('x1', this.scale.x(startX))
+        .attr('y1', this.scale.y(100) - 5)
+        .attr('x2', this.scale.x(startX))
+        .attr('y2', this.scale.y(0) + 10);
 
-    idx.select('line')
-      .attr('x1', this.scale.x(startX))
-      .attr('y1', this.scale.y(100) - 5)
-      .attr('x2', this.scale.x(startX))
-      .attr('y2', this.scale.y(0) + 10);
-
-    idx.select('circle')
-      .attr('cx', this.scale.x(startX))
-      .attr('cy', this.scale.y(0) + 10);
+      idx.select('circle')
+        .attr('cx', this.scale.x(startX))
+        .attr('cy', this.scale.y(0) + 10);
+      }
   }
 
   add (d) {
