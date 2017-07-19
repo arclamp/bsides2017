@@ -54,17 +54,20 @@ export default class Chart extends VisComponent {
     this.height = svg.attr('height') - this.margin.top - this.margin.bottom;
 
     this.chart = svg.select('.chart')
-      .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
+      .attr('transform', `translate(${this.margin.left},${this.margin.top})`)
+      .select('g.layers');
 
-    const x = scaleLinear().range([0, this.width]).domain([0, size]);
-    const y = scaleLinear().range([this.height, 0]).domain([0, 100]);
+    this.scale = {
+      x: scaleLinear().range([0, this.width]).domain([0, size]),
+      y: scaleLinear().range([this.height, 0]).domain([0, 100])
+    };
 
     this.stack = stack();
 
     this.area = area()
-      .x((d, i) => x(i))
-      .y0(d => y(d[0]))
-      .y1(d => y(d[1]));
+      .x((d, i) => this.scale.x(i))
+      .y0(d => this.scale.y(d[0]))
+      .y1(d => this.scale.y(d[1]));
 
     observeStore(next => {
       const cluster = next.get('selected');
@@ -148,6 +151,22 @@ export default class Chart extends VisComponent {
     this.chart.selectAll('path')
       .data(stacks, d => d.key)
       .attr('d', this.area);
+
+    // Update the slider window.
+    const startX = Math.max(this.slider.currentPosition, 0);
+    let width = this.slider.size;
+    if (this.slider.currentPosition < 0) {
+      width += this.slider.currentPosition;
+    }
+
+    select(this.el)
+      .select('rect.slider')
+      .attr('rx', 10)
+      .attr('ry', 10)
+      .attr('x', this.scale.x(startX))
+      .attr('width', this.scale.x(width))
+      .attr('y', this.scale.y(100) - 5)
+      .attr('height', this.scale.y(0) + 10);
   }
 
   add (d) {
