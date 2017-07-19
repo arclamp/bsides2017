@@ -1,4 +1,6 @@
-import { select } from 'd3-selection';
+import { drag } from 'd3-drag';
+import { event,
+         select } from 'd3-selection';
 import { scaleLinear } from 'd3-scale';
 import { area,
          stack } from 'd3-shape';
@@ -68,6 +70,27 @@ export default class Chart extends VisComponent {
       .x((d, i) => this.scale.x(i))
       .y0(d => this.scale.y(d[0]))
       .y1(d => this.scale.y(d[1]));
+
+    const sliderDrag = drag()
+      .on('start', () => {
+        console.log('drag start');
+      })
+      .on('drag', function () {
+        console.log(event.dx);
+        console.log(this);
+        const x = +select(this).attr('x');
+        console.log('x', x);
+        select(this).attr('x', x + event.dx);
+      })
+      .on('end', () => {
+        console.log('drag end');
+      });
+
+    select(this.el)
+      .select('rect.slider')
+      .attr('rx', 10)
+      .attr('ry', 10)
+      .call(sliderDrag);
 
     observeStore(next => {
       const cluster = next.get('selected');
@@ -161,8 +184,6 @@ export default class Chart extends VisComponent {
 
     select(this.el)
       .select('rect.slider')
-      .attr('rx', 10)
-      .attr('ry', 10)
       .attr('x', this.scale.x(startX))
       .attr('width', this.scale.x(width))
       .attr('y', this.scale.y(100) - 5)
