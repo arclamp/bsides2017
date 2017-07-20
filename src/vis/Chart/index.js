@@ -243,8 +243,6 @@ export default class Chart extends Events(VisComponent) {
   }
 
   emitSlider () {
-    console.log('hi');
-
     const x = +select(this.el)
       .select('circle')
       .attr('cx');

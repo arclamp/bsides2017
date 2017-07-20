@@ -25,6 +25,10 @@ export default class Clusters {
     this.data.children[0].value--;
   }
 
+  set (count) {
+    this.data.children[0].value = count;
+  }
+
   addAnomalous (cluster) {
     this.ensureCluster(cluster);
     this.data.children[1].children[cluster].value++;
@@ -32,6 +36,11 @@ export default class Clusters {
 
   removeAnomalous (cluster) {
     this.data.children[1].children[cluster].value--;
+  }
+
+  setAnomalous (cluster, count) {
+    this.ensureCluster(cluster);
+    this.data.children[1].children[cluster].value = count;
   }
 
   ensureCluster (cluster) {

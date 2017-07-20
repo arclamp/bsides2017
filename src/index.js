@@ -61,10 +61,20 @@ select('#faster').on('click', () => {
 let dataWindow = new DataWindow({
   size: 30
 });
+// Create a shared categorical colormap to use for all three vis components.
+const color = scaleOrdinal(schemeCategory20);
+
+// Create a function that reports the current interval between record updates.
+const interval = () => {
+  const state = store.getState();
+  if (state.getIn(['playback', 'running'])) {
+    return state.getIn(['playback', 'interval']);
+  } else {
+    return 100;
+  }
+};
 
 // Instantiate chart view.
-const color = scaleOrdinal(schemeCategory20);
-const interval = () => store.getState().getIn(['playback', 'interval']);
 let chart = new Chart(select('#chart').node(), {
   history: 200,
   windowSize: 30,
@@ -72,12 +82,6 @@ let chart = new Chart(select('#chart').node(), {
   color
 });
 chart.render();
-
-chart.on('slider', (pos, records, counts) => {
-  console.log('pos', pos);
-  console.log('records', records);
-  console.log('counts', counts);
-});
 
 // Instantiate table view.
 let table = new Table(select('#table').node(), {
@@ -94,7 +98,7 @@ table.render();
 
 // Instantiate bubble view.
 let bubble = new Bubble(select('#bubble').node(), {
-  dataWindow,
+  chart,
   interval,
   color
 });
@@ -112,9 +116,6 @@ observeStore(next => {
     index
   }, data);
   chart.records.add(datum);
-
-  // Re-render the bubble view.
-  bubble.render();
 
   // Re-render the chart view.
   chart.render();

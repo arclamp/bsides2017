@@ -17,11 +17,6 @@ export default class Bubble extends VisComponent {
   constructor (el, options) {
     super(el, options);
 
-    // Respond to "add" and "delete" events from the data window; these are all
-    // that will be needed to update the hierarchy data.
-    options.dataWindow.on('added', d => this.add(d));
-    options.dataWindow.on('deleted', d => this.remove(d));
-
     // Retain a function that specifies what the interval is between data
     // updates.
     this.interval = options.interval || (() => 0);
@@ -44,6 +39,18 @@ export default class Bubble extends VisComponent {
       .size([width, height])
       .padding(3);
 
+    options.chart.on('slider', (pos, data, counts) => {
+      Object.keys(counts).forEach(key => {
+        if (key === 'normal') {
+          this.data.set(counts.normal);
+        } else {
+          this.data.setAnomalous(+key, counts[key]);
+        }
+      });
+
+      this.render();
+    });
+
     observeStore(next => {
       const cluster = next.get('selected');
       select(this.el)
@@ -53,10 +60,6 @@ export default class Bubble extends VisComponent {
           return myCluster && myCluster === cluster;
         });
     }, s => s.get('selected'));
-
-    window.slider = new SliceWindow({
-      dataWindow: options.dataWindow
-    });
   }
 
   render () {
@@ -109,21 +112,5 @@ export default class Bubble extends VisComponent {
           return this.color(d.data.cluster);
         }
       });
-  }
-
-  add (d) {
-    if (d.anomalous) {
-      this.data.addAnomalous(d.cluster);
-    } else {
-      this.data.add();
-    }
-  }
-
-  remove (d) {
-    if (d.anomalous) {
-      this.data.removeAnomalous(d.cluster);
-    } else {
-      this.data.remove();
-    }
   }
 }
