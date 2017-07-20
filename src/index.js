@@ -66,11 +66,18 @@ let dataWindow = new DataWindow({
 const color = scaleOrdinal(schemeCategory20);
 const interval = () => store.getState().getIn(['playback', 'interval']);
 let chart = new Chart(select('#chart').node(), {
-  dataWindow,
+  history: 200,
+  windowSize: 30,
   interval,
   color
 });
 chart.render();
+
+chart.on('slider', (pos, records, counts) => {
+  console.log('pos', pos);
+  console.log('records', records);
+  console.log('counts', counts);
+});
 
 // Instantiate table view.
 let table = new Table(select('#table').node(), {
@@ -104,7 +111,7 @@ observeStore(next => {
   const datum = Object.assign({
     index
   }, data);
-  dataWindow.add(datum);
+  chart.records.add(datum);
 
   // Re-render the table view.
   table.render();

@@ -6,6 +6,7 @@ import { area,
          stack } from 'd3-shape';
 
 import VisComponent from 'candela/VisComponent';
+import Events from 'candela/plugins/mixin/Events';
 
 import content from './index.jade';
 import './index.styl';
@@ -15,17 +16,21 @@ import { action,
          store,
          observeStore } from '~/redux';
 
-export default class Chart extends VisComponent {
+export default class Chart extends Events(VisComponent) {
   constructor (el, options) {
     super(el, options);
 
     this.interval = options.interval;
     this.color = options.color;
-
-    const size = 100;
+    this.history = options.history;
+    this.windowSize = options.windowSize;
 
     this.data = new DataWindow({
-      size
+      size: this.history
+    });
+
+    this.records = new DataWindow({
+      size: this.windowSize + this.history
     });
 
     this.clusters = new Clusters();
@@ -57,8 +62,8 @@ export default class Chart extends VisComponent {
       .select('g.layers');
 
     this.scale = {
-      x: scaleLinear().range([0, this.width]).domain([0, size]),
-      y: scaleLinear().range([this.height, 0]).domain([0, 100])
+      x: scaleLinear().range([0, this.width]).domain([0, this.history]),
+      y: scaleLinear().range([this.height, 0]).domain([0, this.windowSize])
     };
 
     this.stack = stack();
@@ -109,8 +114,16 @@ export default class Chart extends VisComponent {
             .select('circle')
             .attr('cx');
 
-          const pos = self.scale.x.invert(x);
-          console.log(self.data.data[pos]);
+          const pos = Math.round(self.scale.x.invert(x));
+
+          const counts = self.data.data[pos];
+          const total = Object.values(counts).reduce((s, v) => s + v, 0);
+
+          const sliceLow = Math.max(0, pos - self.windowSize);
+          const sliceHigh = sliceLow + total;
+          const slice = self.records.data.slice(sliceLow, sliceHigh);
+
+          self.emit('slider', pos, slice, counts);
         });
     })();
 
