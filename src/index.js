@@ -81,7 +81,7 @@ chart.on('slider', (pos, records, counts) => {
 
 // Instantiate table view.
 let table = new Table(select('#table').node(), {
-  dataWindow,
+  chart,
   headers: [
     'TTLs',
     'proto',
@@ -112,9 +112,6 @@ observeStore(next => {
     index
   }, data);
   chart.records.add(datum);
-
-  // Re-render the table view.
-  table.render();
 
   // Re-render the bubble view.
   bubble.render();

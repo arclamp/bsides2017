@@ -12,13 +12,18 @@ export default class Table extends VisComponent {
   constructor (el, options) {
     super(el, options);
 
-    this.dataWindow = options.dataWindow;
+    this.data = [];
     this.headers = options.headers;
     this.color = options.color;
 
     select(this.el).html(content({
       headers: this.headers
     }));
+
+    options.chart.on('slider', (_, data) => {
+      this.data = data;
+      this.render();
+    });
 
     observeStore(next => {
       this.filter = next.get('selected');
@@ -30,7 +35,7 @@ export default class Table extends VisComponent {
     const sel = select(this.el)
       .select('tbody.table-body')
       .selectAll('tr')
-      .data(this.dataWindow.data, d => d.index);
+      .data(this.data, d => d.index);
 
     sel.enter()
       .append(d => stringToElement(row({
