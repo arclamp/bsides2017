@@ -102,7 +102,7 @@ export default class Bubble extends VisComponent {
       .selectAll('g')
       .select('circle')
       .transition(t)
-      .attr('r', d => d.r)
+      .attr('r', d => d.value < 1 ? 0.0 : d.r)
       .style('fill', (d, i) => {
         if (d.depth === 0) {
           return 'lightgray';
