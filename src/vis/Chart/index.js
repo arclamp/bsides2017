@@ -35,9 +35,6 @@ export default class Chart extends Events(VisComponent) {
 
     this.clusters = new Clusters();
 
-    options.dataWindow.on('added', d => this.add(d));
-    options.dataWindow.on('deleted', d => this.remove(d));
-
     this.sliderAutoUpdate = true;
 
     this.margin = {

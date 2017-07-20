@@ -57,10 +57,6 @@ select('#faster').on('click', () => {
   store.dispatch(action.increaseSpeed());
 });
 
-// Create a data window object.
-let dataWindow = new DataWindow({
-  size: 30
-});
 // Create a shared categorical colormap to use for all three vis components.
 const color = scaleOrdinal(schemeCategory20);
 
