@@ -33,6 +33,14 @@ export default class Chart extends Events(VisComponent) {
       size: this.windowSize + this.history
     });
 
+    this.last = new SliceWindow({
+      dataWindow: this.records,
+      size: this.windowSize
+    });
+
+    this.last.on('added', d => this.add(d));
+    this.last.on('deleted', d => this.remove(d));
+
     this.clusters = new Clusters();
 
     this.sliderAutoUpdate = true;
