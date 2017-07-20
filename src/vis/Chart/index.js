@@ -109,22 +109,7 @@ export default class Chart extends Events(VisComponent) {
 
           self.sliderAutoUpdate = sliderAutoUpdate;
         })
-        .on('end', function () {
-          const x = +select(this)
-            .select('circle')
-            .attr('cx');
-
-          const pos = Math.round(self.scale.x.invert(x));
-
-          const counts = self.data.data[pos];
-          const total = Object.values(counts).reduce((s, v) => s + v, 0);
-
-          const sliceLow = Math.max(0, pos - self.windowSize);
-          const sliceHigh = sliceLow + total;
-          const slice = self.records.data.slice(sliceLow, sliceHigh);
-
-          self.emit('slider', pos, slice, counts);
-        });
+        .on('end', () => this.emitSlider());
     })();
 
     select(this.el)
@@ -235,7 +220,10 @@ export default class Chart extends Events(VisComponent) {
       idx.select('circle')
         .attr('cx', this.scale.x(startX))
         .attr('cy', this.scale.y(0) + 10);
-      }
+    }
+
+    // Emit the slider info for benefit of other components.
+    this.emitSlider();
   }
 
   add (d) {
@@ -252,5 +240,24 @@ export default class Chart extends Events(VisComponent) {
     } else {
       this.clusters.remove();
     }
+  }
+
+  emitSlider () {
+    console.log('hi');
+
+    const x = +select(this.el)
+      .select('circle')
+      .attr('cx');
+
+    const pos = Math.round(this.scale.x.invert(x));
+
+    const counts = this.data.data[pos];
+    const total = Object.values(counts).reduce((s, v) => s + v, 0);
+
+    const sliceLow = Math.max(0, pos - this.windowSize);
+    const sliceHigh = sliceLow + total;
+    const slice = this.records.data.slice(sliceLow, sliceHigh);
+
+    this.emit('slider', pos, slice, counts);
   }
 }
