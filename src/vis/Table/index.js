@@ -35,7 +35,7 @@ export default class Table extends VisComponent {
     const sel = select(this.el)
       .select('tbody.table-body')
       .selectAll('tr')
-      .data(this.data, d => d.index);
+      .data(this.data.slice().reverse(), d => d.index);
 
     sel.enter()
       .append(d => stringToElement(row({
