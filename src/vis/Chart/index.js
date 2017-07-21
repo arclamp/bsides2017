@@ -1,34 +1,49 @@
-import { select } from 'd3-selection';
+import { drag } from 'd3-drag';
+import { event,
+         select } from 'd3-selection';
 import { scaleLinear } from 'd3-scale';
 import { area,
          stack } from 'd3-shape';
 
 import VisComponent from 'candela/VisComponent';
+import Events from 'candela/plugins/mixin/Events';
 
 import content from './index.jade';
 import './index.styl';
-import DataWindow from '~/util/DataWindow';
+import DataWindow, { SliceWindow } from '~/util/DataWindow';
 import Clusters from '~/util/Clusters';
 import { action,
          store,
          observeStore } from '~/redux';
 
-export default class Chart extends VisComponent {
+export default class Chart extends Events(VisComponent) {
   constructor (el, options) {
     super(el, options);
 
     this.interval = options.interval;
     this.color = options.color;
-
-    const size = 100;
+    this.history = options.history;
+    this.windowSize = options.windowSize;
 
     this.data = new DataWindow({
-      size
+      size: this.history
     });
+
+    this.records = new DataWindow({
+      size: this.windowSize + this.history
+    });
+
+    this.last = new SliceWindow({
+      dataWindow: this.records,
+      size: this.windowSize
+    });
+
+    this.last.on('added', d => this.add(d));
+    this.last.on('deleted', d => this.remove(d));
+
     this.clusters = new Clusters();
 
-    options.dataWindow.on('added', d => this.add(d));
-    options.dataWindow.on('deleted', d => this.remove(d));
+    this.sliderAutoUpdate = true;
 
     this.margin = {
       top: 20,
@@ -48,17 +63,67 @@ export default class Chart extends VisComponent {
     this.height = svg.attr('height') - this.margin.top - this.margin.bottom;
 
     this.chart = svg.select('.chart')
-      .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
+      .attr('transform', `translate(${this.margin.left},${this.margin.top})`)
+      .select('g.layers');
 
-    const x = scaleLinear().range([0, this.width]).domain([0, size]);
-    const y = scaleLinear().range([this.height, 0]).domain([0, 100]);
+    this.scale = {
+      x: scaleLinear().range([0, this.width]).domain([0, this.history]),
+      y: scaleLinear().range([this.height, 0]).domain([0, this.windowSize])
+    };
 
     this.stack = stack();
 
     this.area = area()
-      .x((d, i) => x(i))
-      .y0(d => y(d[0]))
-      .y1(d => y(d[1]));
+      .x((d, i) => this.scale.x(i))
+      .y0(d => this.scale.y(d[0]))
+      .y1(d => this.scale.y(d[1]));
+
+    const sliderDrag = (() => {
+      const self = this;
+
+      let curX;
+
+      return drag()
+        .on('start', function () {
+          curX = +select(this)
+            .select('circle')
+            .attr('cx');
+        })
+        .on('drag', function () {
+          const g = select(this);
+          const circle = g.select('circle');
+          const line = g.select('line');
+
+          curX += event.dx;
+
+          // Truncate the slider position to an integer value lying between 0
+          // and the number of elements in the history window.
+          let sliderAutoUpdate = false;
+          let truncX = Math.floor(self.scale.x.invert(curX));
+          if (truncX > self.data.data.length - 1) {
+            truncX = self.data.data.length - 1;
+            sliderAutoUpdate = true;
+          } else if (truncX < 0) {
+            truncX = 0;
+          }
+          truncX = self.scale.x(truncX);
+
+          circle.attr('cx', truncX);
+          line.attr('x1', truncX)
+            .attr('x2', truncX);
+
+          self.sliderAutoUpdate = sliderAutoUpdate;
+
+          self.emitSlider();
+        })
+        .on('end', () => this.emitSlider());
+    })();
+
+    select(this.el)
+      .select('g.index')
+      .call(sliderDrag)
+      .select('circle')
+      .attr('r', 7);
 
     observeStore(next => {
       const cluster = next.get('selected');
@@ -142,6 +207,30 @@ export default class Chart extends VisComponent {
     this.chart.selectAll('path')
       .data(stacks, d => d.key)
       .attr('d', this.area);
+
+    // Auto-update the index.
+    if (this.sliderAutoUpdate) {
+      const startX = this.data.data.length - 1;
+      if (startX === this.data.size) {
+        this.sliderAutoUpdate = false;
+      }
+
+      const idx = select(this.el)
+        .select('g.index');
+
+      idx.select('line')
+        .attr('x1', this.scale.x(startX))
+        .attr('y1', this.scale.y(100) - 5)
+        .attr('x2', this.scale.x(startX))
+        .attr('y2', this.scale.y(0) + 10);
+
+      idx.select('circle')
+        .attr('cx', this.scale.x(startX))
+        .attr('cy', this.scale.y(0) + 10);
+    }
+
+    // Emit the slider info for benefit of other components.
+    this.emitSlider();
   }
 
   add (d) {
@@ -158,5 +247,22 @@ export default class Chart extends VisComponent {
     } else {
       this.clusters.remove();
     }
+  }
+
+  emitSlider () {
+    const x = +select(this.el)
+      .select('circle')
+      .attr('cx');
+
+    const pos = Math.round(this.scale.x.invert(x));
+
+    const counts = this.data.data[pos];
+    const total = Object.values(counts).reduce((s, v) => s + v, 0);
+
+    const sliceLow = Math.max(0, pos - this.windowSize);
+    const sliceHigh = sliceLow + total;
+    const slice = this.records.data.slice(sliceLow, sliceHigh);
+
+    this.emit('slider', pos, slice, counts);
   }
 }

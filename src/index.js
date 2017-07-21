@@ -57,18 +57,31 @@ select('#faster').on('click', () => {
   store.dispatch(action.increaseSpeed());
 });
 
-// Create a data window object.
-let dataWindow = new DataWindow({
-  size: 100
+// Create a shared categorical colormap to use for all three vis components.
+const color = scaleOrdinal(schemeCategory20);
+
+// Create a function that reports the current interval between record updates.
+const interval = () => {
+  const state = store.getState();
+  if (state.getIn(['playback', 'running'])) {
+    return state.getIn(['playback', 'interval']);
+  } else {
+    return 100;
+  }
+};
+
+// Instantiate chart view.
+let chart = new Chart(select('#chart').node(), {
+  history: 200,
+  windowSize: 30,
+  interval,
+  color
 });
-let bigDataWindow = new DataWindow({
-  size: 100
-});
+chart.render();
 
 // Instantiate table view.
-const color = scaleOrdinal(schemeCategory20);
 let table = new Table(select('#table').node(), {
-  dataWindow,
+  chart,
   headers: [
     'Z',
     'rejected',
@@ -85,23 +98,13 @@ let table = new Table(select('#table').node(), {
 });
 table.render();
 
-const interval = () => store.getState().getIn(['playback', 'interval']);
-
 // Instantiate bubble view.
 let bubble = new Bubble(select('#bubble').node(), {
-  dataWindow,
+  chart,
   interval,
   color
 });
 bubble.render();
-
-// Instantiate chart view.
-let chart = new Chart(select('#chart').node(), {
-  dataWindow: bigDataWindow,
-  interval,
-  color
-});
-chart.render();
 
 // Install reactive actions to changes in the store.
 //
@@ -114,14 +117,7 @@ observeStore(next => {
   const datum = Object.assign({
     index
   }, data);
-  dataWindow.add(datum);
-  bigDataWindow.add(datum);
-
-  // Re-render the table view.
-  table.render();
-
-  // Re-render the bubble view.
-  bubble.render();
+  chart.records.add(datum);
 
   // Re-render the chart view.
   chart.render();

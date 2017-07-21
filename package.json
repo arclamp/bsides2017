@@ -14,6 +14,7 @@
     "bootswatch": "^3.3.7",
     "candela": "^0.15.0",
     "css-loader": "^0.28.4",
+    "d3-drag": "^1.1.1",
     "d3-selection": "^1.1.0",
     "html-webpack-plugin": "^2.29.0",
     "http-server": "^0.10.0",
@@ -33,6 +34,9 @@
     "style-loader": "^0.18.2",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1",
+    "tap-spec": "^4.1.1",
+    "tape": "^4.7.0",
+    "tape-catch": "^1.0.6",
     "url-loader": "^0.5.9",
     "webpack": "^3.0.0",
     "yaml-loader": "^0.5.0"
@@ -40,6 +44,7 @@
   "scripts": {
     "build": "webpack",
     "watch": "webpack --watch",
+    "test": "node build/test.js | tap-spec",
     "serve": "http-server build",
     "lint": "semistandard | snazzy"
   },

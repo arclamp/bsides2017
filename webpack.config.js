@@ -8,11 +8,12 @@ var candela = require('candela/webpack');
 module.exports = candela({
   devtool: 'cheap-module-source-map',
   entry: {
-    index: './src/index.js'
+    index: './src/index.js',
+    test: './test/dataWindow.js'
   },
   output: {
     path: path.resolve('build'),
-    filename: 'index.js'
+    filename: '[name].js'
   },
   resolve: {
     alias: {
@@ -79,5 +80,8 @@ module.exports = candela({
       $: 'jquery',
       jQuery: 'jquery'
     })
-  ]
+  ],
+  node: {
+    fs: 'empty'
+  }
 });

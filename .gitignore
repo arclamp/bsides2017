@@ -1,6 +1,9 @@
 # Vim lockfiles
 *.swp
 
+# package lockfile
+package-lock.json
+
 # Dependency directories
 node_modules/
 
