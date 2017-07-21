@@ -30,7 +30,8 @@ export default class Chart extends Events(VisComponent) {
     });
 
     this.records = new DataWindow({
-      size: this.windowSize + this.history
+      size: this.windowSize + this.history - 1,
+      initial: Array(this.windowSize)
     });
 
     this.last = new SliceWindow({
@@ -254,15 +255,15 @@ export default class Chart extends Events(VisComponent) {
       .select('circle')
       .attr('cx');
 
-    const pos = Math.round(this.scale.x.invert(x));
+    const sliceLow = Math.round(this.scale.x.invert(x));
+    const sliceHigh = sliceLow + this.windowSize;
 
-    const counts = this.data.data[pos];
-    const total = Object.values(counts).reduce((s, v) => s + v, 0);
+    const counts = this.data.data[sliceLow];
 
-    const sliceLow = Math.max(0, pos - this.windowSize);
-    const sliceHigh = sliceLow + total;
-    const slice = this.records.data.slice(sliceLow, sliceHigh);
+    const slice = this.records.data
+      .slice(sliceLow, sliceHigh)
+      .filter(x => x !== undefined);
 
-    this.emit('slider', pos, slice, counts);
+    this.emit('slider', undefined, slice, counts);
   }
 }
