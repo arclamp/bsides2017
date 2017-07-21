@@ -106,7 +106,7 @@ export default class Bubble extends VisComponent {
       .style('fill', (d, i) => {
         if (d.depth === 0) {
           return 'lightgray';
-        } else if (d.depth === 1) {
+        } else if (d.data.cluster === 'non-anomalous') {
           return 'gray';
         } else {
           return this.color(d.data.cluster);
