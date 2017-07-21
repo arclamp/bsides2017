@@ -34,12 +34,12 @@ store.dispatch(action.setDataStream(data));
 //
 // Play button.
 select('#play').on('click', () => {
-  store.dispatch(action.start());
-});
-
-// Stop button.
-select('#stop').on('click', () => {
-  store.dispatch(action.stop());
+  const running = store.getState().getIn(['playback', 'running']);
+  if (running) {
+    store.dispatch(action.stop());
+  } else {
+    store.dispatch(action.start());
+  }
 });
 
 // Rewind button.
@@ -157,7 +157,9 @@ observeStore(next => {
     stop();
   }
 
-  // Disable the play/stop buttons to reflect the playback state.
-  select('#play').attr('disabled', running ? true : null);
-  select('#stop').attr('disabled', running ? null : true);
+  // Toggle the play/pause button's appearance.
+  select('#play')
+    .select('span')
+    .classed('glyphicon-play', !running)
+    .classed('glyphicon-pause', running);
 }, s => s.getIn(['playback', 'running']));
