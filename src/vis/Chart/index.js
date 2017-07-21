@@ -113,6 +113,8 @@ export default class Chart extends Events(VisComponent) {
             .attr('x2', truncX);
 
           self.sliderAutoUpdate = sliderAutoUpdate;
+
+          self.emitSlider();
         })
         .on('end', () => this.emitSlider());
     })();
