@@ -7,11 +7,6 @@ export default class Clusters {
         {
           cluster: 'non-anomalous',
           value: 0
-        },
-        {
-          cluster: 'anomalous',
-          value: 0,
-          children: []
         }
       ]
     };
@@ -31,23 +26,23 @@ export default class Clusters {
 
   addAnomalous (cluster) {
     this.ensureCluster(cluster);
-    this.data.children[1].children[cluster].value++;
+    this.data.children[cluster + 1].value++;
   }
 
   removeAnomalous (cluster) {
-    this.data.children[1].children[cluster].value--;
+    this.data.children[cluster + 1].value--;
   }
 
   setAnomalous (cluster, count) {
     this.ensureCluster(cluster);
-    this.data.children[1].children[cluster].value = count;
+    this.data.children[cluster + 1].value = count;
   }
 
   ensureCluster (cluster) {
-    if (this.data.children[1].children.length <= cluster) {
-      for (let i = this.data.children[1].children.length; i < cluster + 1; i++) {
-        this.data.children[1].children[i] = {
-          cluster: i,
+    if (this.data.children.length <= cluster + 1) {
+      for (let i = this.data.children.length; i < cluster + 2; i++) {
+        this.data.children[i] = {
+          cluster: i - 1,
           value: 0
         };
       }
@@ -64,7 +59,7 @@ export default class Clusters {
   }
 
   anomalousCounts () {
-    return this.data.children[1].children
+    return this.data.children.slice(1)
       .sort((a, b) => a.cluster - b.cluster)
       .map(d => d.value);
   }
