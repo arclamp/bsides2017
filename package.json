@@ -11,6 +11,7 @@
     "babel-loader": "^7.1.1",
     "babel-preset-es2015": "^6.24.1",
     "bootstrap": "^3.3.7",
+    "bootstrap-slider": "^9.8.1",
     "bootswatch": "^3.3.7",
     "candela": "^0.15.0",
     "css-loader": "^0.28.4",

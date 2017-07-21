@@ -39,6 +39,10 @@ module.exports = candela({
         use: 'jade-loader'
       },
       {
+        test: /\.css$/,
+        use: 'css-loader'
+      },
+      {
         test: /\.less$/,
         use: [
           'style-loader',

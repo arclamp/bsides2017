@@ -1,6 +1,7 @@
 import { scaleOrdinal,
          schemeCategory20 } from 'd3-scale';
 import { select } from 'd3-selection';
+import Slider from 'bootstrap-slider';
 
 import { action,
          store,
@@ -15,6 +16,7 @@ import DataWindow from '~/util/DataWindow';
 import dataRaw from '../data/streaming_output.json';
 
 import 'bootstrap/dist/js/bootstrap';
+import 'bootstrap-slider/dist/css/bootstrap-slider.min.css';
 import './index.less';
 import './index.styl';
 import content from './index.jade';
@@ -29,6 +31,11 @@ const data = dataRaw.split('\n')
 
 // Kick off the application by installing the data to the store.
 store.dispatch(action.setDataStream(data));
+
+// Create the speed slider.
+const slider = new Slider('#speed', {
+  formatter: val => `Current value: ${val}`
+});
 
 // Install action handlers
 //

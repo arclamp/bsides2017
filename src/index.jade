@@ -12,10 +12,11 @@ nav.navbar.navbar-inverse
         button#rewind.btn.btn-default: span.glyphicon.glyphicon-step-backward
         button#stop.btn.btn-default: span.glyphicon.glyphicon-stop
         button#play.btn.btn-default: span.glyphicon.glyphicon-play
+        input#speed(data-slider-id="speedSlider" type="text" data-slider-min="0" data-slider-max="1000" data-slider-step="1" data-slider-value="1000")
 
-      .btn-group
-        button#slower.btn.btn-default: span.glyphicon.glyphicon-minus-sign
-        button#faster.btn.btn-default: span.glyphicon.glyphicon-plus-sign
+      //-.btn-group
+        //-button#slower.btn.btn-default: span.glyphicon.glyphicon-minus-sign
+        //-button#faster.btn.btn-default: span.glyphicon.glyphicon-plus-sign
 
   .row
     .col-md-6
