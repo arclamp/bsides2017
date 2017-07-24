@@ -42,11 +42,6 @@ select('#play').on('click', () => {
   }
 });
 
-// Rewind button.
-select('#rewind').on('click', () => {
-  store.dispatch(action.setDataPointer(0));
-});
-
 // Slower button.
 select('#slower').on('click', () => {
   store.dispatch(action.decreaseSpeed());
